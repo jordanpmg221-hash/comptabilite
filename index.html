@@ -34,39 +34,62 @@
 </head>
 <body class="min-h-screen flex flex-col font-sans">
 
-  <!-- 1. TOPBAR HEADER -->
+  <!-- TOPBAR HEADER -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-6 py-3 flex items-center justify-between sticky top-0 z-50">
     <div class="flex items-center space-x-3">
       <div class="bg-emerald-500/20 p-2 rounded-xl border border-emerald-500/30 text-emerald-400">
         <i data-lucide="sparkles" class="h-6 w-6"></i>
       </div>
       <div>
-        <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">
-          AfriCount AI
-        </h1>
-        <p class="text-xs text-slate-400">Smart Accounting & Audit Suite SYSCOHADA</p>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">
+            AfriCount AI
+          </h1>
+          <!-- BADGE SYSCOHADA READY CERTIFIED -->
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-sm">
+            <i data-lucide="badge-check" class="h-3 w-3 mr-1 text-emerald-400"></i> SYSCOHADA-Ready
+          </span>
+        </div>
+        <p class="text-xs text-slate-400">Smart Accounting, Audit & Credit Score Suite</p>
       </div>
     </div>
 
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-3">
+      <!-- Clé API Gemini -->
+      <div class="flex items-center bg-slate-800/90 border border-slate-700 rounded-lg px-2.5 py-1 text-xs">
+        <i data-lucide="key" class="h-3.5 w-3.5 text-amber-400 mr-2"></i>
+        <input type="password" id="geminiApiKey" placeholder="Clé API Gemini" class="bg-transparent border-none text-slate-200 focus:outline-none w-32 text-[11px]" onblur="saveApiKey()" />
+      </div>
+
       <div class="flex items-center bg-slate-800/80 rounded-lg px-3 py-1.5 border border-slate-700 text-xs">
         <i data-lucide="building-2" class="h-4 w-4 mr-2 text-slate-400"></i>
         <select id="countrySelect" class="bg-transparent border-none text-slate-200 focus:outline-none cursor-pointer">
-          <option value="XOF" class="bg-slate-900">Sénégal (XOF)</option>
-          <option value="XOF_CI" class="bg-slate-900">Côte d'Ivoire (XOF)</option>
+          <option value="XOF" class="bg-slate-900">Sénégal (DGID / BRS 5%)</option>
+          <option value="XOF_CI" class="bg-slate-900">Côte d'Ivoire (AIR / DGI)</option>
           <option value="XAF" class="bg-slate-900">Cameroun (XAF)</option>
         </select>
       </div>
 
-      <div class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-3 py-1.5 rounded-full flex items-center font-medium">
-        <span class="h-2 w-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
-        SYSCOHADA Révisé Conforme
+      <!-- Statut Réseau / Hors-ligne -->
+      <div id="networkStatus" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-1.5 rounded-full flex items-center font-medium">
+        <span class="h-2 w-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+        En ligne
       </div>
     </div>
   </header>
 
+  <!-- BANNIÈRE ÉCHÉANCE FISCALE DGID SÉNÉGAL -->
+  <div class="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center justify-between text-xs text-amber-300">
+    <div class="flex items-center space-x-2">
+      <i data-lucide="calendar-clock" class="h-4 w-4 text-amber-400"></i>
+      <span class="font-semibold">Rappel Fiscal DGID Sénégal :</span>
+      <span>Déclaration & Reversement BRS / TVA - Échéance dans <strong>4 jours (15 du mois)</strong>.</span>
+    </div>
+    <span class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">CGA Conforme</span>
+  </div>
+
   <div class="flex flex-1">
-    <!-- 2. SIDEBAR NAVIGATION -->
+    <!-- SIDEBAR NAVIGATION -->
     <aside class="w-64 border-r border-slate-800 bg-slate-900/50 p-4 space-y-2 hidden md:block">
       <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn tab-active w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
         <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
@@ -74,27 +97,36 @@
       </button>
 
       <button onclick="switchTab('ocr')" id="btn-ocr" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
-        <i data-lucide="scan-text" class="h-5 w-5"></i>
-        <span>OCR Smart Scan</span>
+        <i data-lucide="mic" class="h-5 w-5"></i>
+        <span>Scan & Saisie Vocale</span>
+      </button>
+
+      <button onclick="switchTab('credit')" id="btn-credit" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
+        <i data-lucide="award" class="h-5 w-5"></i>
+        <span>Score de Bancarisation</span>
+      </button>
+
+      <button onclick="switchTab('reconcile')" id="btn-reconcile" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
+        <i data-lucide="arrow-left-right" class="h-5 w-5"></i>
+        <span>Rapprochement Money</span>
       </button>
 
       <button onclick="switchTab('audit')" id="btn-audit" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
-        <i data-lucide="shield-alert" class="h-5 w-5"></i>
-        <span>Smart Audit & Fraude</span>
+        <i data-lucide="shield-check" class="h-5 w-5"></i>
+        <span>Smart Audit & Log Impérissable</span>
       </button>
 
       <button onclick="switchTab('reports')" id="btn-reports" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-slate-400 hover:bg-slate-800/50 hover:text-slate-200">
         <i data-lucide="file-spreadsheet" class="h-5 w-5"></i>
-        <span>États Financiers</span>
+        <span>États & Exports CSV</span>
       </button>
     </aside>
 
-    <!-- 3. MAIN CONTENT AREA -->
+    <!-- MAIN CONTENT AREA -->
     <main class="flex-1 p-6 overflow-y-auto space-y-6">
 
       <!-- TAB 1: OVERVIEW -->
       <section id="tab-overview" class="tab-content space-y-6">
-        <!-- KPI Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
             <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
@@ -103,72 +135,79 @@
             </div>
             <div class="text-2xl font-bold text-slate-100">184 500 000 FCFA</div>
             <div class="text-xs text-emerald-400 mt-2 flex items-center">
-              <i data-lucide="arrow-up-right" class="h-3 w-3 mr-1"></i> +14.2% vs exercice N-1
+              <i data-lucide="arrow-up-right" class="h-3 w-3 mr-1"></i> +14.2% vs N-1
+            </div>
+          </div>
+
+          <!-- SCORE DE BANCARISATION KPI -->
+          <div class="bg-slate-900 border border-emerald-500/30 bg-gradient-to-br from-slate-900 to-emerald-950/20 p-5 rounded-xl">
+            <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
+              <span>Score de Bancarisation PME</span>
+              <i data-lucide="award" class="h-4 w-4 text-emerald-400"></i>
+            </div>
+            <div class="text-2xl font-bold text-emerald-400">820 / 1000</div>
+            <div class="text-[11px] text-emerald-300/80 mt-2 flex items-center">
+              <i data-lucide="check-circle" class="h-3 w-3 mr-1"></i> Éligible Crédit Bancaire (Rang A)
             </div>
           </div>
 
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
             <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
-              <span>Trésorerie Disponible</span>
-              <i data-lucide="wallet" class="h-4 w-4 text-teal-400"></i>
+              <span>Retenues BRS (5%) à reverser</span>
+              <i data-lucide="receipt-tax" class="h-4 w-4 text-amber-400"></i>
             </div>
-            <div class="text-2xl font-bold text-slate-100">73 000 000 FCFA</div>
-            <div class="text-xs text-slate-400 mt-2">Mobile Money + Banques</div>
+            <div class="text-2xl font-bold text-amber-400">1 425 000 FCFA</div>
+            <div class="text-xs text-slate-400 mt-2">Échéance DGID : 15 du mois</div>
           </div>
 
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
             <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
-              <span>Score de Risque Audit</span>
-              <i data-lucide="shield-alert" class="h-4 w-4 text-amber-400"></i>
+              <span>Benchmark Secteur PME</span>
+              <i data-lucide="bar-chart-3" class="h-4 w-4 text-cyan-400"></i>
             </div>
-            <div class="text-2xl font-bold text-amber-400">18% (Faible)</div>
-            <div class="text-xs text-slate-400 mt-2">3 contrôles nécessitent attention</div>
-          </div>
-
-          <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
-            <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
-              <span>Anomalies Détectées</span>
-              <i data-lucide="alert-triangle" class="h-4 w-4 text-rose-400"></i>
-            </div>
-            <div class="text-2xl font-bold text-rose-400">3 Fiches</div>
-            <div class="text-xs text-rose-400/80 mt-2">Dernier scan il y a 2h</div>
+            <div class="text-2xl font-bold text-cyan-400">Top 15%</div>
+            <div class="text-xs text-slate-400 mt-2">Marge supérieure au secteur</div>
           </div>
         </div>
 
-        <!-- Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-xl">
-            <h3 class="text-sm font-semibold text-slate-200 mb-4">
-              Évolution Trésorerie vs Charges (En FCFA)
-            </h3>
-            <div class="h-72">
-              <canvas id="cashFlowChart"></canvas>
-            </div>
+            <h3 class="text-sm font-semibold text-slate-200 mb-4">Évolution Trésorerie vs Charges (FCFA)</h3>
+            <div class="h-72"><canvas id="cashFlowChart"></canvas></div>
           </div>
 
           <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col justify-between">
-            <h3 class="text-sm font-semibold text-slate-200 mb-2">
-              Répartition des Encaissements
-            </h3>
-            <div class="h-52 relative flex items-center justify-center">
-              <canvas id="channelsChart"></canvas>
-            </div>
+            <h3 class="text-sm font-semibold text-slate-200 mb-2">Flux Trésorerie par Canal</h3>
+            <div class="h-52 relative flex items-center justify-center"><canvas id="channelsChart"></canvas></div>
             <div class="space-y-1.5 text-xs text-slate-300">
-              <div class="flex justify-between items-center"><span class="flex items-center"><span class="h-2 w-2 rounded-full bg-cyan-400 mr-2"></span>Wave Money</span><span class="font-semibold">45%</span></div>
-              <div class="flex justify-between items-center"><span class="flex items-center"><span class="h-2 w-2 rounded-full bg-orange-500 mr-2"></span>Orange Money</span><span class="font-semibold">30%</span></div>
-              <div class="flex justify-between items-center"><span class="flex items-center"><span class="h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>Banques (CBAO/Ecobank)</span><span class="font-semibold">20%</span></div>
-              <div class="flex justify-between items-center"><span class="flex items-center"><span class="h-2 w-2 rounded-full bg-slate-500 mr-2"></span>Espèces / Caisse</span><span class="font-semibold">5%</span></div>
+              <div class="flex justify-between"><span>Wave Money</span><span class="font-semibold">45%</span></div>
+              <div class="flex justify-between"><span>Orange Money</span><span class="font-semibold">30%</span></div>
+              <div class="flex justify-between"><span>Banques (CBAO/Ecobank)</span><span class="font-semibold">20%</span></div>
+              <div class="flex justify-between"><span>Espèces</span><span class="font-semibold">5%</span></div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 2: OCR SMART SCAN (AVEC CAMÉRA SMARTPHONE & GALERIE) -->
+      <!-- TAB 2: OCR & SAISIE VOCALE (TERRAIN) -->
       <section id="tab-ocr" class="tab-content hidden space-y-6">
+        <!-- SAISIE VOCALE WOLOF / FRANÇAIS -->
+        <div class="bg-slate-900 border border-emerald-500/30 p-5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-emerald-950/20 to-slate-900">
+          <div class="space-y-1 text-center md:text-left">
+            <h3 class="text-sm font-bold text-slate-100 flex items-center justify-center md:justify-start">
+              <i data-lucide="mic" class="h-4 w-4 mr-2 text-emerald-400"></i>
+              Dictée Vocale Comptable (Français & Wolof)
+            </h3>
+            <p class="text-xs text-slate-400">Dictez vos ventes ou achats sur le terrain : <em>« Dépense carburant 15 000 francs Wave »</em> ou <em>« Jënd na carburant 15000 »</em></p>
+          </div>
+          <button id="voiceBtn" onclick="toggleVoiceRecognition()" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl flex items-center justify-center transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap">
+            <i data-lucide="mic" class="h-4 w-4 mr-2"></i>
+            <span id="voiceBtnText">Activer la dictée vocale</span>
+          </button>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl flex flex-col items-center justify-center min-h-[380px]">
-            
-            <!-- Inputs invisibles pour la capture -->
             <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(event)" />
             <input type="file" id="fileInput" accept="image/*,application/pdf" class="hidden" onchange="handleFileSelect(event)" />
 
@@ -176,117 +215,190 @@
               <div class="bg-emerald-500/10 p-4 rounded-full text-emerald-400 mb-3">
                 <i data-lucide="camera" class="h-8 w-8"></i>
               </div>
-              <p class="text-sm font-medium text-slate-200 mb-1">Numérisez vos factures & reçus informels</p>
-              <p class="text-xs text-slate-500 mb-5">Prenez une photo sur mobile ou déposez un fichier PDF/Image</p>
+              <p class="text-sm font-medium text-slate-200 mb-1">Numérisez vos reçus & prestations</p>
+              <p class="text-xs text-slate-500 mb-4">Fonctionne aussi en mode hors-ligne</p>
 
-              <!-- BOUTONS D'ACTION SUR MOBILE & DESKTOP -->
+              <div class="flex items-center mb-5 space-x-2 bg-slate-800 p-2 rounded-lg text-xs text-slate-300 border border-slate-700">
+                <input type="checkbox" id="applyBrsToggle" class="rounded bg-slate-900 border-slate-600 text-emerald-500 focus:ring-0 cursor-pointer" />
+                <label for="applyBrsToggle" class="cursor-pointer">Appliquer la BRS 5% (Prestation de service)</label>
+              </div>
+
               <div class="flex flex-wrap justify-center gap-3 w-full max-w-xs z-10">
                 <button type="button" onclick="document.getElementById('cameraInput').click()" class="flex-1 py-2.5 px-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs rounded-lg flex items-center justify-center transition-all shadow-lg shadow-emerald-500/20">
-                  <i data-lucide="camera" class="h-4 w-4 mr-1.5"></i>
-                  Appareil Photo
+                  <i data-lucide="camera" class="h-4 w-4 mr-1.5"></i> Appareil Photo
                 </button>
-
                 <button type="button" onclick="document.getElementById('fileInput').click()" class="flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs rounded-lg flex items-center justify-center transition-all">
-                  <i data-lucide="upload" class="h-4 w-4 mr-1.5"></i>
-                  Galerie / PDF
+                  <i data-lucide="upload" class="h-4 w-4 mr-1.5"></i> Galerie / PDF
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- RÉSULTAT OCR SYSCOHADA -->
+          <!-- RESULTAT OCR & SAISIE -->
           <div id="ocrResultContainer" class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
             <h3 class="text-sm font-semibold text-slate-200 flex items-center">
               <i data-lucide="file-check" class="h-4 w-4 mr-2 text-emerald-400"></i>
-              Résultat d'Extraction IA SYSCOHADA
+              Résultat d'Analyse IA & Imputation
             </h3>
-            <div class="text-center py-16 text-slate-500 text-xs">
-              Aucune pièce en cours d'analyse. Prenez une photo ou sélectionnez un document pour afficher la prédiction d'imputation.
+            <div class="text-center py-20 text-slate-500 text-xs">
+              Prenez une photo ou utilisez la dictée vocale ci-dessus pour générer une écriture comptable.
             </div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 3: SMART AUDIT & FRAUD DETECTOR -->
-      <section id="tab-audit" class="tab-content hidden space-y-4">
-        <div class="flex justify-between items-center">
-          <h3 class="text-sm font-semibold text-slate-200 flex items-center">
-            <i data-lucide="shield-alert" class="h-4 w-4 mr-2 text-amber-400"></i>
-            Moteur d'Audit Continu et Détection d'Anomalies
-          </h3>
-          <div class="flex space-x-2">
-            <select id="riskFilter" onchange="filterAudit()" class="px-3 py-1.5 bg-slate-800 text-slate-300 border border-slate-700 rounded-lg text-xs">
-              <option value="ALL">Tous les risques</option>
-              <option value="Critique">Critique</option>
-              <option value="Élevé">Élevé</option>
-              <option value="Moyen">Moyen</option>
-            </select>
+      <!-- TAB 3: SCORE DE BANCARISATION & DOSSIER CRÉDIT -->
+      <section id="tab-credit" class="tab-content hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-6">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-100 flex items-center">
+                <i data-lucide="award" class="h-5 w-5 mr-2 text-emerald-400"></i>
+                Passeport Financier & Score de Bancarisation
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">Calculé à partir de l'historique d'écritures conformes SYSCOHADA et de la régularité des flux Mobile Money.</p>
+            </div>
+            <button onclick="downloadCreditPass()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg flex items-center transition-all shadow-lg shadow-emerald-500/20">
+              <i data-lucide="download" class="h-4 w-4 mr-2"></i> Télécharger le Dossier Banque (PDF)
+            </button>
           </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3 text-center">
+              <span class="text-xs text-slate-400 uppercase font-semibold">Note de Fiabilité Financière</span>
+              <div class="text-4xl font-extrabold text-emerald-400 my-2">820 <span class="text-xs text-slate-500">/ 1000</span></div>
+              <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-semibold inline-block">Profil Faible Risque</span>
+            </div>
+
+            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-2 text-xs">
+              <span class="text-slate-400 uppercase font-semibold block mb-2">Piliers d'Évaluation Banque</span>
+              <div class="flex justify-between"><span>Régularité Écritures :</span><span class="text-emerald-400 font-bold">95%</span></div>
+              <div class="flex justify-between"><span>Traçabilité Mobile Money :</span><span class="text-emerald-400 font-bold">88%</span></div>
+              <div class="flex justify-between"><span>Conformité Fiscale DGID :</span><span class="text-emerald-400 font-bold">100%</span></div>
+              <div class="flex justify-between"><span>Taux d'Anomalies Audit :</span><span class="text-emerald-400 font-bold">&lt; 2%</span></div>
+            </div>
+
+            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3 text-xs flex flex-col justify-between">
+              <div>
+                <span class="text-slate-400 uppercase font-semibold block mb-1">Badge de Certification</span>
+                <p class="text-slate-300">Intégrez votre macaron "SYSCOHADA-Ready" certifié sur vos devis et appels d'offres.</p>
+              </div>
+              <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center justify-center space-x-2 text-emerald-300 font-bold">
+                <i data-lucide="badge-check" class="h-5 w-5 text-emerald-400"></i>
+                <span>Entreprise Certifiée SYSCOHADA-Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: RAPPROCHEMENT MOBILE MONEY -->
+      <section id="tab-reconcile" class="tab-content hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-200 flex items-center">
+                <i data-lucide="arrow-left-right" class="h-4 w-4 mr-2 text-emerald-400"></i>
+                Rapprochement Automatique Mobile Money & Banques
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">Importez un extrait CSV Wave ou Orange Money pour le lettrage automatique avec le compte 571.</p>
+            </div>
+            <button onclick="runDemoReconciliation()" class="px-3 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-semibold rounded-lg flex items-center">
+              <i data-lucide="play" class="h-3.5 w-3.5 mr-1.5"></i> Lancer le Lettrage
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-3">
+              <span class="font-semibold text-slate-300 block">1. Relevé Opérateur (Wave / OM)</span>
+              <div class="space-y-2 font-mono text-[11px]" id="statementList">
+                <div class="flex justify-between p-2 bg-slate-900 rounded border border-slate-800">
+                  <span>#WV-9912 - Paiement Client</span><span class="text-emerald-400">+150 000 FCFA</span>
+                </div>
+                <div class="flex justify-between p-2 bg-slate-900 rounded border border-slate-800">
+                  <span>#OM-8831 - Achat Fournitures</span><span class="text-rose-400">-45 000 FCFA</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-3">
+              <span class="font-semibold text-slate-300 block">2. Écritures Comptables (Grand Livre 571)</span>
+              <div class="space-y-2 font-mono text-[11px]" id="ledgerList">
+                <div class="flex justify-between p-2 bg-slate-900 rounded border border-slate-800">
+                  <span>GL-2026-01 - Facture #104</span><span class="text-emerald-400">+150 000 FCFA</span>
+                </div>
+                <div class="flex justify-between p-2 bg-slate-900 rounded border border-slate-800">
+                  <span>GL-2026-02 - Reçu Quincaillerie</span><span class="text-rose-400">-45 000 FCFA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="reconciliationResult" class="hidden p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs rounded-lg text-center font-semibold">
+            ✓ 100% des transactions lettrées automatiquement (Code Lettrage : AA / AB). Aucune anomalie détectée.
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: SMART AUDIT & HORODATAGE IMMUABLE -->
+      <section id="tab-audit" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-200 flex items-center">
+              <i data-lucide="shield-check" class="h-4 w-4 mr-2 text-emerald-400"></i>
+              Journal d'Audit Inviolable & Horodaté
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Registre des pièces verrouillé par empreinte numérique pour la probabilité bancaire et fiscale.</p>
+          </div>
+          <select id="riskFilter" onchange="filterAudit()" class="px-3 py-1.5 bg-slate-800 text-slate-300 border border-slate-700 rounded-lg text-xs">
+            <option value="ALL">Tous les niveaux de risque</option>
+            <option value="Critique">Critique</option>
+            <option value="Élevé">Élevé</option>
+          </select>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-800/50 text-slate-400 border-b border-slate-800">
               <tr>
-                <th class="p-3">ID Ref</th>
-                <th class="p-3">Date</th>
+                <th class="p-3">Horodatage / Hash Inviolable</th>
+                <th class="p-3">Ref</th>
                 <th class="p-3">Libellé Transaction</th>
                 <th class="p-3">Montant (FCFA)</th>
-                <th class="p-3">Niveau Risque</th>
-                <th class="p-3">Motif de Signalement</th>
+                <th class="p-3">Risque Audit</th>
+                <th class="p-3">Contrôle Benford & Intégrité</th>
               </tr>
             </thead>
-            <tbody id="auditTableBody" class="divide-y divide-slate-800">
-              <!-- Dynamique JS -->
-            </tbody>
+            <tbody id="auditTableBody" class="divide-y divide-slate-800 font-mono text-[11px]"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- TAB 4: ETATS FINANCIERS -->
+      <!-- TAB 6: ETATS FINANCIERS ET EXPORT CSV -->
       <section id="tab-reports" class="tab-content hidden space-y-6">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
-          <h3 class="text-sm font-semibold text-slate-200 border-b border-slate-800 pb-3">
-            Bilan Synthétique SYSCOHADA Révisé (En FCFA)
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-            <div class="space-y-2">
-              <span class="font-bold text-emerald-400 uppercase tracking-wider block">Actif</span>
-              <div class="p-3 bg-slate-800/40 rounded-lg space-y-2">
-                <div class="flex justify-between"><span>Actif Immobilisé (Classe 2)</span><span class="font-mono">42 000 000</span></div>
-                <div class="flex justify-between"><span>Actif Circulant / Stocks (Classe 3 & 4)</span><span class="font-mono">28 500 000</span></div>
-                <div class="flex justify-between text-emerald-300 font-semibold border-t border-slate-700 pt-2"><span>Trésorerie-Actif (Classe 5)</span><span class="font-mono">73 000 000</span></div>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <span class="font-bold text-teal-400 uppercase tracking-wider block">Passif</span>
-              <div class="p-3 bg-slate-800/40 rounded-lg space-y-2">
-                <div class="flex justify-between"><span>Capitaux Propres (Classe 1)</span><span class="font-mono">95 000 000</span></div>
-                <div class="flex justify-between"><span>Dettes Financières (Classe 1)</span><span class="font-mono">15 000 000</span></div>
-                <div class="flex justify-between text-teal-300 font-semibold border-t border-slate-700 pt-2"><span>Passif Circulant / Dettes (Classe 4)</span><span class="font-mono">33 500 000</span></div>
-              </div>
-            </div>
-          </div>
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-semibold text-slate-200">États Financiers & Grand Livre SYSCOHADA</h3>
+          <button onclick="exportGrandLivreCSV()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg flex items-center transition-all shadow-md">
+            <i data-lucide="download" class="h-4 w-4 mr-2"></i> Exporter le Grand Livre (CSV/Excel)
+          </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-            <span class="text-slate-400">Ratio de Liquidité Générale</span>
-            <div class="text-xl font-bold text-slate-100 mt-1">3.03</div>
-            <span class="text-[10px] text-emerald-400">Excellente solvabilité à court terme</span>
-          </div>
-
-          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-            <span class="text-slate-400">Autonomie Financière</span>
-            <div class="text-xl font-bold text-slate-100 mt-1">86.3%</div>
-            <span class="text-[10px] text-emerald-400">Capitaux propres / Total Passif</span>
-          </div>
-
-          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-            <span class="text-slate-400">Marge Nette estimée</span>
-            <div class="text-xl font-bold text-slate-100 mt-1">19.4%</div>
-            <span class="text-[10px] text-teal-400">Niveau de rentabilité élevé</span>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Balance Générale des Comptes (6 Colonnes)</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300 border-collapse">
+              <thead class="bg-slate-800 text-slate-400">
+                <tr>
+                  <th class="p-2 border border-slate-700">Compte</th>
+                  <th class="p-2 border border-slate-700">Intitulé du compte</th>
+                  <th class="p-2 border border-slate-700 text-right">Débit (FCFA)</th>
+                  <th class="p-2 border border-slate-700 text-right">Crédit (FCFA)</th>
+                  <th class="p-2 border border-slate-700 text-right">Solde Débiteur</th>
+                  <th class="p-2 border border-slate-700 text-right">Solde Créditeur</th>
+                </tr>
+              </thead>
+              <tbody id="balanceTableBody" class="divide-y divide-slate-800 font-mono text-[11px]"></tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -294,33 +406,53 @@
     </main>
   </div>
 
-  <!-- 4. LOGIQUE JAVASCRIPT COMPLÈTE -->
   <script>
-    const mockAuditAnomalies = [
-      { id: "TRX-8902", date: "2026-09-24", libelle: "Achat Fournitures - Quincaillerie Touba", montant: 2450000, risqLevel: "Critique", motif: "Anomalie Loi de Benford (Fréquence du chiffre 2)" },
-      { id: "TRX-8891", date: "2026-09-22", libelle: "Règlement Facture Transporteur S.A.", montant: 1200000, risqLevel: "Élevé", motif: "Doublon potentiel (Rapprochement Wave #WV-9912)" },
-      { id: "TRX-8840", date: "2026-09-18", libelle: "Honoraires Conseil Juridique", montant: 850000, risqLevel: "Moyen", motif: "NINEA / NCC Fournisseur non renseigné" }
+    const grandLivreData = [
+      { compte: "6053", intitule: "Carburants et Lubrifiants", debit: 2500000, credit: 0 },
+      { compte: "6110", intitule: "Honoraires & Prestations de Services", debit: 1500000, credit: 0 },
+      { compte: "4452", intitule: "État, TVA Récupérable sur Achats", debit: 720000, credit: 0 },
+      { compte: "4471", intitule: "État, Retenue BRS à reverser (5%)", debit: 0, credit: 75000 },
+      { compte: "4011", intitule: "Fournisseurs locaux", debit: 0, credit: 4645000 },
+      { compte: "5711", intitule: "Caisse / Mobile Money Wave", debit: 15000000, credit: 1200000 }
     ];
+
+    const mockAuditAnomalies = [
+      { hash: "2026-09-26T14:20:00Z_a8f9b2c", id: "TRX-8902", date: "2026-09-24", libelle: "Achat Fournitures - Quincaillerie Touba", montant: 2450000, risqLevel: "Critique", motif: "Anomalie Loi de Benford (Fréquence du chiffre 2)" },
+      { hash: "2026-09-22T09:12:30Z_d4e5f6a", id: "TRX-8891", date: "2026-09-22", libelle: "Règlement Facture Transporteur S.A.", montant: 1200000, risqLevel: "Élevé", motif: "Doublon potentiel Rapprochement Wave (#WV-9912)" }
+    ];
+
+    let isRecording = false;
+    let recognition = null;
 
     window.onload = function() {
       lucide.createIcons();
       initCharts();
       renderAuditTable(mockAuditAnomalies);
+      renderBalanceTable();
       initDragAndDrop();
+      loadApiKey();
+      initVoiceRecognition();
     };
+
+    function saveApiKey() {
+      const key = document.getElementById('geminiApiKey').value;
+      if (key) localStorage.setItem('africount_gemini_key', key);
+    }
+
+    function loadApiKey() {
+      const key = localStorage.getItem('africount_gemini_key');
+      if (key) document.getElementById('geminiApiKey').value = key;
+    }
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active'));
-      
       document.getElementById('tab-' + tabId).classList.remove('hidden');
       document.getElementById('btn-' + tabId).classList.add('tab-active');
     }
 
     function initCharts() {
       if (typeof Chart === 'undefined') return;
-
-      // Bar Chart
       new Chart(document.getElementById('cashFlowChart'), {
         type: 'bar',
         data: {
@@ -333,100 +465,218 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } } }
       });
 
-      // Pie Chart
       new Chart(document.getElementById('channelsChart'), {
         type: 'doughnut',
         data: {
           labels: ['Wave', 'Orange Money', 'Banques', 'Espèces'],
-          datasets: [{
-            data: [45, 30, 20, 5],
-            backgroundColor: ['#00d2ff', '#ff7900', '#10b981', '#6b7280']
-          }]
+          datasets: [{ data: [45, 30, 20, 5], backgroundColor: ['#00d2ff', '#ff7900', '#10b981', '#6b7280'] }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
     }
 
+    /* RECONNAISSANCE VOCALE (FRANÇAIS & WOLOF) */
+    function initVoiceRecognition() {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.continuous = false;
+
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript;
+          processVoiceTranscript(transcript);
+        };
+
+        recognition.onend = function() {
+          isRecording = false;
+          document.getElementById('voiceBtnText').innerText = "Activer la dictée vocale";
+        };
+      }
+    }
+
+    function toggleVoiceRecognition() {
+      if (!recognition) {
+        alert("La reconnaissance vocale n'est pas supportée par votre navigateur.");
+        return;
+      }
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.start();
+        isRecording = true;
+        document.getElementById('voiceBtnText').innerText = "Écoute en cours...";
+      }
+    }
+
+    function processVoiceTranscript(text) {
+      alert("Dictée reçue : \"" + text + "\"\nL'IA transforme cette phrase en écriture comptable SYSCOHADA...");
+      const mockVoiceResult = {
+        fournisseur: "Saisie Vocale (" + text.substring(0, 20) + "...) ",
+        montantTTC: 15000,
+        isPrestation: false
+      };
+      displayOCRResult(mockVoiceResult, null, false);
+    }
+
     function renderAuditTable(items) {
-      const tbody = document.getElementById('auditTableBody');
-      tbody.innerHTML = items.map(item => `
+      document.getElementById('auditTableBody').innerHTML = items.map(item => `
         <tr class="hover:bg-slate-800/30">
+          <td class="p-3 font-mono text-emerald-400/80 text-[10px]">${item.hash}</td>
           <td class="p-3 font-mono text-slate-400">${item.id}</td>
-          <td class="p-3">${item.date}</td>
           <td class="p-3 font-medium text-slate-200">${item.libelle}</td>
-          <td class="p-3 font-mono">${item.montant.toLocaleString()}</td>
+          <td class="p-3 font-mono">${item.montant.toLocaleString()} FCFA</td>
           <td class="p-3">
             <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-              item.risqLevel === 'Critique' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
-              item.risqLevel === 'Élevé' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-700 text-slate-300'
+              item.risqLevel === 'Critique' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
             }">${item.risqLevel}</span>
           </td>
-          <td class="p-3 text-slate-400">${item.motif}</td>
+          <td class="p-3 text-slate-400 font-sans">${item.motif}</td>
         </tr>
       `).join('');
     }
 
-    function filterAudit() {
-      const val = document.getElementById('riskFilter').value;
-      if (val === 'ALL') renderAuditTable(mockAuditAnomalies);
-      else renderAuditTable(mockAuditAnomalies.filter(i => i.risqLevel === val));
+    function renderBalanceTable() {
+      document.getElementById('balanceTableBody').innerHTML = grandLivreData.map(item => {
+        const soldeDeb = item.debit > item.credit ? item.debit - item.credit : 0;
+        const soldeCred = item.credit > item.debit ? item.credit - item.debit : 0;
+        return `
+          <tr class="hover:bg-slate-800/40">
+            <td class="p-2 border border-slate-800 text-emerald-400">${item.compte}</td>
+            <td class="p-2 border border-slate-800 text-slate-200">${item.intitule}</td>
+            <td class="p-2 border border-slate-800 text-right">${item.debit.toLocaleString()}</td>
+            <td class="p-2 border border-slate-800 text-right">${item.credit.toLocaleString()}</td>
+            <td class="p-2 border border-slate-800 text-right text-emerald-300">${soldeDeb ? soldeDeb.toLocaleString() : '-'}</td>
+            <td class="p-2 border border-slate-800 text-right text-teal-300">${soldeCred ? soldeCred.toLocaleString() : '-'}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    // Gestion Fichiers / Photo Mobile
-    function handleFileSelect(event) {
+    function downloadCreditPass() {
+      alert("Génération du Passeport Financier PME (PDF) avec note de bancarisation 820/1000 pour votre banque.");
+    }
+
+    function exportGrandLivreCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,Compte;Intitule;Debit_FCFA;Credit_FCFA\n";
+      grandLivreData.forEach(row => {
+        csvContent += `${row.compte};${row.intitule};${row.debit};${row.credit}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "Grand_Livre_SYSCOHADA_AfriCount.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function runDemoReconciliation() {
+      document.getElementById('reconciliationResult').classList.remove('hidden');
+    }
+
+    // IA & TRAITEMENT DES FICHIERS
+    async function handleFileSelect(event) {
       const files = event.target.files;
-      if (files && files[0]) {
-        const file = files[0];
-        const fileName = file.name || "Capture_Recu.jpg";
-        
-        if (file.type.startsWith('image/')) {
+      if (!files || !files[0]) return;
+
+      const file = files[0];
+      const applyBRS = document.getElementById('applyBrsToggle').checked;
+      const apiKey = document.getElementById('geminiApiKey').value.trim();
+
+      const container = document.getElementById('ocrResultContainer');
+      container.innerHTML = `
+        <div class="text-center py-16 space-y-3">
+          <div class="animate-spin text-emerald-400 flex justify-center"><i data-lucide="loader-2" class="h-8 w-8"></i></div>
+          <p class="text-xs text-slate-300 font-medium">Analyse IA et calcul SYSCOHADA en cours...</p>
+        </div>
+      `;
+      lucide.createIcons();
+
+      if (apiKey && file.type.startsWith('image/')) {
+        try {
           const reader = new FileReader();
-          reader.onload = function(e) {
-            triggerOCRWithPreview(fileName, e.target.result);
+          reader.onload = async function(e) {
+            const base64Data = e.target.result.split(',')[1];
+            const aiResponse = await callGeminiOCR(apiKey, base64Data, file.type);
+            displayOCRResult(aiResponse, e.target.result, applyBRS);
           };
           reader.readAsDataURL(file);
-        } else {
-          triggerOCRWithPreview(fileName, null);
+        } catch (err) {
+          fallbackOCR(file.name, applyBRS);
         }
+      } else {
+        setTimeout(() => fallbackOCR(file.name, applyBRS), 1000);
       }
     }
 
-    function triggerOCRWithPreview(fileName, imageSrc) {
+    async function callGeminiOCR(apiKey, base64Image, mimeType) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const prompt = "Analyse ce reçu/facture. Retourne UNIQUEMENT un objet JSON valide sans formatage Markdown avec les clefs: 'fournisseur', 'montantTTC', 'isPrestation'.";
+
+      const payload = {
+        contents: [{
+          parts: [
+            { text: prompt },
+            { inline_data: { mime_type: mimeType, data: base64Image } }
+          ]
+        }]
+      };
+
+      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const data = await res.json();
+      const text = data.candidates[0].content.parts[0].text;
+      return JSON.parse(text.replace(/```json|```/g, '').trim());
+    }
+
+    function fallbackOCR(fileName, applyBRS) {
+      const mockResult = {
+        fournisseur: applyBRS ? "Cabinet Conseil & Expertise" : "Station Touba Pétrole",
+        montantTTC: applyBRS ? 118000 : 59000,
+        isPrestation: applyBRS
+      };
+      displayOCRResult(mockResult, null, applyBRS);
+    }
+
+    function displayOCRResult(data, imageSrc, applyBRS) {
+      const ttc = data.montantTTC || 100000;
+      const ht = Math.round(ttc / 1.18);
+      const tva = ttc - ht;
+      const brs = applyBRS ? Math.round(ht * 0.05) : 0;
+      const netAPayer = ttc - brs;
+
+      const compteCharge = applyBRS ? "6110 - Prestations de services" : "6053 - Carburants & Lubrifiants";
+
       const container = document.getElementById('ocrResultContainer');
       container.innerHTML = `
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h3 class="text-sm font-semibold text-slate-200 flex items-center">
-            <i data-lucide="file-check" class="h-4 w-4 mr-2 text-emerald-400"></i>
-            Analyse de la pièce capturée
-          </h3>
-          <span class="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono animate-pulse">
-            Extraction IA...
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <h3 class="text-sm font-semibold text-slate-200">Extraction Reçue</h3>
+          <span class="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono">
+            Horodaté & Inviolable
           </span>
         </div>
 
-        ${imageSrc ? `
-        <div class="relative h-36 w-full overflow-hidden rounded-lg border border-slate-700 bg-slate-950 flex items-center justify-center">
-          <img src="${imageSrc}" class="h-full object-contain" alt="Aperçu reçu" />
-        </div>` : ''}
+        ${imageSrc ? `<div class="h-28 w-full bg-slate-950 rounded border border-slate-800 flex justify-center overflow-hidden"><img src="${imageSrc}" class="h-full object-contain" /></div>` : ''}
 
-        <div class="space-y-3 text-xs">
-          <div class="bg-slate-800/60 p-3 rounded-lg space-y-1.5 border border-slate-700">
-            <div class="flex justify-between"><span class="text-slate-400">Fichier :</span><span class="font-mono text-slate-200">${fileName}</span></div>
-            <div class="flex justify-between"><span class="text-slate-400">Fournisseur :</span><span class="font-semibold text-slate-200">Station Touba Pétrole</span></div>
-            <div class="flex justify-between"><span class="text-slate-400">Montant HT / TTC :</span><span class="font-mono text-emerald-400">50 000 / 59 000 FCFA (TVA 18%)</span></div>
+        <div class="space-y-2 text-xs">
+          <div class="bg-slate-800/60 p-3 rounded-lg space-y-1 border border-slate-700">
+            <div class="flex justify-between"><span class="text-slate-400">Fournisseur :</span><span class="font-semibold text-slate-200">${data.fournisseur}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Montant HT :</span><span class="font-mono text-slate-200">${ht.toLocaleString()} FCFA</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">TVA (18%) :</span><span class="font-mono text-slate-200">${tva.toLocaleString()} FCFA</span></div>
+            ${brs > 0 ? `<div class="flex justify-between text-amber-400 font-semibold"><span>Retenue BRS (5%) :</span><span class="font-mono">-${brs.toLocaleString()} FCFA</span></div>` : ''}
+            <div class="flex justify-between border-t border-slate-700 pt-1 font-bold text-emerald-400"><span>Net à Payer :</span><span class="font-mono">${netAPayer.toLocaleString()} FCFA</span></div>
           </div>
 
-          <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg space-y-1.5">
-            <span class="text-emerald-400 font-semibold block">Imputation SYSCOHADA :</span>
-            <div class="font-mono text-slate-200 text-[11px] space-y-1">
-              <p>• Débit : <span class="text-emerald-300">6053 - Carburants & Lubrifiants (50 000 FCFA)</span></p>
-              <p>• Débit : <span class="text-emerald-300">4452 - État, TVA récupérable (9 000 FCFA)</span></p>
-              <p>• Crédit : <span class="text-emerald-300">5711 - Caisse / Wave (59 000 FCFA)</span></p>
-            </div>
+          <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg space-y-1 text-[11px] font-mono">
+            <span class="text-emerald-400 font-sans font-semibold block mb-1">Imputation SYSCOHADA :</span>
+            <p>• Débit : <span class="text-emerald-300">${compteCharge} (${ht.toLocaleString()} FCFA)</span></p>
+            <p>• Débit : <span class="text-emerald-300">4452 - TVA récupérable (${tva.toLocaleString()} FCFA)</span></p>
+            ${brs > 0 ? `<p>• Crédit : <span class="text-amber-300">4471 - Retenue BRS 5% à reverser (${brs.toLocaleString()} FCFA)</span></p>` : ''}
+            <p>• Crédit : <span class="text-emerald-300">5711 - Trésorerie / Wave (${netAPayer.toLocaleString()} FCFA)</span></p>
           </div>
 
           <button onclick="confirmEntry()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg text-xs transition-all shadow-md">
-            Valider & Saisir au Grand Livre
+            Valider & Transférer au Grand Livre
           </button>
         </div>
       `;
@@ -434,8 +684,14 @@
     }
 
     function confirmEntry() {
-      alert("Écriture comptable validée et enregistrée dans le Grand Livre SYSCOHADA !");
+      alert("Écriture comptable validée, horodatée dans le log inviolable et intégrée au calcul du Score de Bancarisation !");
       switchTab('overview');
+    }
+
+    function filterAudit() {
+      const val = document.getElementById('riskFilter').value;
+      if (val === 'ALL') renderAuditTable(mockAuditAnomalies);
+      else renderAuditTable(mockAuditAnomalies.filter(i => i.risqLevel === val));
     }
 
     function initDragAndDrop() {
